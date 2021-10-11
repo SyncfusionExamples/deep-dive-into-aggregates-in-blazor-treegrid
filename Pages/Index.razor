@@ -1,0 +1,92 @@
+﻿@page "/"
+
+<SfTreeGrid DataSource="@TreeData" IdMapping="TaskId" ParentIdMapping="ParentId" TreeColumnIndex="1">
+    <TreeGridAggregates>
+        <TreeGridAggregate>
+            <TreeGridAggregateColumns>
+                <TreeGridAggregateColumn Field="Duration" Type="AggregateType.Sum" Format="n">
+                    <FooterTemplate>
+                        @{
+                            var SumValue = (context as AggregateTemplateContext);
+                            <div>
+                                <p>Sum: @SumValue.Sum</p>
+                            </div>
+                        }
+                    </FooterTemplate>
+                </TreeGridAggregateColumn>
+                <TreeGridAggregateColumn Field="Approved" Type="AggregateType.TrueCount">
+                    <FooterTemplate>
+                        @{
+                            var TrueCountValue = (context as AggregateTemplateContext);
+                            <div>
+                                <p>TrueCount: @TrueCountValue.TrueCount</p>
+                            </div>
+                        }
+                    </FooterTemplate>
+                </TreeGridAggregateColumn>
+            </TreeGridAggregateColumns>
+        </TreeGridAggregate>
+        <TreeGridAggregate>
+            <TreeGridAggregateColumns>
+                <TreeGridAggregateColumn Field="Priority" Type="AggregateType.Custom">
+                    <FooterTemplate>
+                        @{
+                            <div>
+                                <p>High Priority Count: @CustomAggregateFn()</p>
+                            </div>
+                        }
+                    </FooterTemplate>
+                </TreeGridAggregateColumn>
+            </TreeGridAggregateColumns>
+        </TreeGridAggregate>
+    </TreeGridAggregates>
+    <TreeGridColumns>
+        <TreeGridColumn Field="TaskId" HeaderText="Task ID" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="TaskName" HeaderText="Task Name" Width="200"></TreeGridColumn>
+        <TreeGridColumn Field="StartDate" HeaderText="Start Date" Format="dd-MMM-yyyy"></TreeGridColumn>
+        <TreeGridColumn Field="Duration" HeaderText="Duration" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="Progress" HeaderText="Progress" TextAlign="TextAlign.Right"></TreeGridColumn>
+        <TreeGridColumn Field="Priority" HeaderText="Priority"></TreeGridColumn>
+        <TreeGridColumn Field="Approved" HeaderText="Approved" TextAlign="TextAlign.Center" DisplayAsCheckBox="true"></TreeGridColumn>
+    </TreeGridColumns>
+</SfTreeGrid>
+
+@code{
+    public List<BusinessObject> TreeData = new List<BusinessObject>();
+
+    public class BusinessObject
+    {
+        public int TaskId { get; set; }
+        public string TaskName { get; set; }
+        public int Duration { get; set; }
+        public DateTime? StartDate { get; set; }
+        public int Progress { get; set; }
+        public string Priority { get; set; }
+        public int? ParentId { get; set; }
+        public bool? Approved { get; set; }
+    }
+
+    public int CustomAggregateFn()
+    {
+        var HighCount = 0;
+        foreach(BusinessObject sampleData in TreeData)
+        {
+            if (sampleData.Priority.Equals("High"))
+                HighCount++;
+        }
+        return HighCount;
+    }
+
+    protected override void OnInitialized()
+    {
+        TreeData.Add(new BusinessObject() { TaskId = 1, TaskName = "Parent Task 1", Duration = 10, Progress = 70, ParentId = null, Priority = "High", StartDate = DateTime.Now.AddDays(-10), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 2, TaskName = "Child tsk 1", Duration = 4, Progress = 80, ParentId = 1, Priority = "Normal", StartDate = DateTime.Now.AddDays(-8), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 3, TaskName = "Child Task 2", Duration = 5, Progress = 65, ParentId = 1, Priority = "Critical", StartDate = DateTime.Now.AddDays(-1), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 4, TaskName = "Parent Task 2", Duration = 6, Progress = 77, ParentId = null, Priority = "Low", Approved = true, StartDate = DateTime.Now.AddDays(-20) });
+        TreeData.Add(new BusinessObject() { TaskId = 5, TaskName = "Child Task 5", Duration = 9, Progress = 25, ParentId = 4, Priority = "Normal", StartDate = DateTime.Now.AddDays(-7), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 6, TaskName = "Child Task 6", Duration = 9, Progress = 7, ParentId = 5, Priority = "Normal", StartDate = DateTime.Now.AddDays(-35), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 7, TaskName = "Parént Task 3", Duration = 4, Progress = 45, ParentId = null, Priority = "High", StartDate = DateTime.Now.AddDays(-3), Approved = false });
+        TreeData.Add(new BusinessObject() { TaskId = 8, TaskName = "Child Task 7", Duration = 3, Progress = 38, ParentId = 7, Priority = "Critical", StartDate = DateTime.Now.AddDays(-1), Approved = true, });
+        TreeData.Add(new BusinessObject() { TaskId = 9, TaskName = "Child Task 8", Duration = 7, Progress = 70, ParentId = 7, Priority = "Low", StartDate = DateTime.Now.AddDays(-5), Approved = true, });
+    }
+}
