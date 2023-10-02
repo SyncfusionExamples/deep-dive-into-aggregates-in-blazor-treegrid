@@ -51,7 +51,7 @@
     </TreeGridColumns>
 </SfTreeGrid>
 
-@code{
+@code {
     public List<BusinessObject> TreeData = new List<BusinessObject>();
 
     public class BusinessObject
@@ -69,7 +69,7 @@
     public int CustomAggregateFn()
     {
         var HighCount = 0;
-        foreach(BusinessObject sampleData in TreeData)
+        foreach (BusinessObject sampleData in TreeData)
         {
             if (sampleData.Priority.Equals("High"))
                 HighCount++;
